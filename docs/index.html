@@ -59,11 +59,39 @@ h1{font-size:22px;margin:0;font-weight:700}
 .scorehow{margin-top:16px}
 .scorehow h2{font-size:15px;font-weight:600;margin:0 0 8px}
 .scorehow .sub{margin:8px 0 0}
-.wchips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
-.wchips span{background:var(--surface-1);border:1px solid var(--ring);border-radius:14px;
-  padding:3px 10px;font-size:12.5px;color:var(--ink-2);white-space:nowrap;
+/* ---------- rank-what-you-value list ---------- */
+.ranker{background:var(--surface-1);border:1px solid var(--ring);border-radius:12px;
+  padding:10px 12px 12px}
+.rankhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:0 0 8px;
+  font-size:13px;color:var(--ink-2)}
+.rankhead b{color:var(--ink-1);font-size:13.5px}
+.rankhead .hint{color:var(--ink-3);font-size:12px}
+.rankhead .state{color:var(--seq-400);font-size:12px}
+#rankReset{margin-left:auto;font-size:12.5px}
+#rankList{list-style:none;margin:0;padding:0}
+#rankList li{display:flex;align-items:center;gap:8px;padding:7px 10px;margin:5px 0;
+  background:var(--page);border:1px solid var(--ring);border-radius:9px;
+  cursor:grab;user-select:none;-webkit-user-select:none}
+#rankList li:focus-visible{outline:2px solid var(--seq-400);outline-offset:1px}
+#rankList li.dragging{cursor:grabbing;position:relative;z-index:5;
+  border-color:var(--seq-400);box-shadow:0 10px 26px rgba(0,0,0,.30)}
+/* only the grip is touch-action:none, so a thumb on the row still scrolls the page */
+#rankList .grip{flex:0 0 auto;color:var(--ink-3);font-size:15px;line-height:1;
+  padding:6px 5px;margin:-6px -3px;touch-action:none;cursor:grab}
+#rankList .n{flex:0 0 16px;text-align:right;color:var(--ink-3);font-size:12.5px;
   font-variant-numeric:tabular-nums}
-.wchips b{color:var(--ink-1);font-weight:600}
+#rankList .sw{flex:0 0 11px;width:11px;height:11px;border-radius:50%;border:1px solid var(--ring)}
+#rankList .nm{flex:1 1 auto;min-width:0;font-size:13.5px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+#rankList .nm .hint{color:var(--ink-3);font-size:11.5px}
+#rankList .bar{flex:0 0 90px;height:7px;border-radius:4px;background:var(--grid);overflow:hidden}
+#rankList .bar i{display:block;height:100%;border-radius:4px}
+#rankList .pts{flex:0 0 40px;text-align:right;font-size:12.5px;color:var(--ink-1);
+  font-weight:600;font-variant-numeric:tabular-nums}
+#rankList .mv{flex:0 0 auto;display:flex;gap:2px}
+#rankList .mv button{border:1px solid var(--ring);background:var(--surface-1);color:var(--ink-2);
+  border-radius:6px;font:inherit;font-size:11px;line-height:1;padding:4px 6px;cursor:pointer}
+#rankList .mv button:hover{border-color:var(--seq-400);color:var(--ink-1)}
 
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
 .tile{background:var(--surface-1);border:1px solid var(--ring);border-radius:10px;padding:12px 14px}
@@ -195,6 +223,10 @@ td.bad{color:var(--st-critical);font-weight:600}
   .card{padding:12px}
   th,td{padding:5px 7px}
   .method{padding:12px 14px}
+  #rankList .bar{display:none}
+  #rankList .nm .hint{display:none}
+  #rankList li{padding:9px 8px;gap:7px}
+  #rankReset{margin-left:0}
 }
 @media (pointer:coarse){
   .seg button{padding:8px 13px}
@@ -202,6 +234,8 @@ td.bad{color:var(--st-critical);font-weight:600}
   .filters select{padding:6px 8px}
   #focusPanel .close{padding:5px 10px}
   #focusPanel .row{padding:8px 0}
+  #rankList .mv button{padding:7px 9px;font-size:12px}
+  #rankList .grip{padding:8px 7px;margin:-8px -5px}
 }
 </style>
 </head>
@@ -248,16 +282,18 @@ walkability. Green = best.</p>
 <div class="legend" id="legend"></div>
 
 <div class="scorehow">
-  <h2>How the score works</h2>
-  <div class="wchips" aria-label="Score weights, heaviest first">
-    <span><b>Rent level</b> 3.0</span>
-    <span><b>MRT / LRT</b> 2.0</span>
-    <span><b>Supermarket</b> 1.4</span>
-    <span><b>Primary school</b> 1.2</span>
-    <span><b>Mall</b> 1.0</span>
-    <span><b>Hawker centre</b> 0.7</span>
-    <span><b>Infant care</b> 0.5</span>
-    <span><b>Community club</b> 0.2</span>
+  <h2>How the score works — rank what <i>you</i> value</h2>
+  <p class="sub" style="margin:0 0 10px">Put what matters most to you at the top. The eight
+  weights are fixed (3.0 → 0.2, summing to 10); you decide which component gets which.
+  Everything updates: the map, the tiles, the charts and every block's scorecard.</p>
+  <div class="ranker">
+    <div class="rankhead">
+      <b>Your priorities</b>
+      <span class="hint">drag the ⠿ handle, or use ▲▼ / arrow keys · points out of 10</span>
+      <span class="state" id="rankState"></span>
+      <button class="linklike" id="rankReset">reset to the default order</button>
+    </div>
+    <ol id="rankList" aria-label="Score components, most valued first"></ol>
   </div>
   <p class="sub">Higher rent counts <i>for</i> a block (the market's vote), popular primary
   schools count extra, and closer pays more — an MRT at 100&#8202;m beats one at 300&#8202;m.
@@ -286,12 +322,12 @@ walkability. Green = best.</p>
   <h2>Method, sources & caveats</h2>
   <ul>
     <li><b>Distances are straight-line</b> from the HDB building centroid — an easy, consistent yardstick, but real walks are longer (roads, blocks, canals). MRT/LRT distance is to the <i>station</i> (the mean position of its exits).</li>
-    <li><b>The score (0–10) is a weighted sum of eight components</b>, ordered by how much they shape daily life: <b>rent level 3.0</b> &gt; <b>MRT/LRT 2.0</b> &gt; <b>supermarket 1.4</b> &gt; <b>primary school 1.2</b> &gt; <b>mall 1.0</b> &gt; <b>hawker centre 0.7</b> &gt; <b>infant care 0.5</b> &gt; <b>community club 0.2</b> (weights sum to 10; the ordering is editorial). Having several of one type nearby doesn't add points — it shows in the block panel instead.</li>
+    <li><b>The score (0–10) is a weighted sum of eight components, and you set the order</b>. The ladder of weights is fixed — 1st place is worth <b>3.0</b>, then <b>2.0</b>, <b>1.4</b>, <b>1.2</b>, <b>1.0</b>, <b>0.7</b>, <b>0.5</b>, <b>0.2</b> (summing to 10) — but <i>which</i> component sits on each rung is yours to drag in <a href="#rankList">“rank what you value”</a> above, and your order is remembered on this device. The default is editorial, ordered by how much each thing shapes daily life: rent level &gt; MRT/LRT &gt; supermarket &gt; primary school &gt; mall &gt; hawker centre &gt; infant care &gt; community club. Having several of one type nearby doesn't add points — it shows in the block panel instead.</li>
     <li><b>Closer pays more (proximity gradient)</b>: each amenity pays its <b>full weight within 100&#8202;m</b> of the block, sliding down to <b>half at its benchmark distance</b> and <b>zero at 2× the benchmark</b> (linear in between) — so an MRT 100&#8202;m away is worth visibly more than one 700&#8202;m away, even though both are "within benchmark". Benchmarks: supermarket &amp; hawker 500&#8202;m, MRT &amp; infant care 800&#8202;m, school / mall / CC 1&#8202;km.</li>
     <li><b>Primary schools are weighted by demand, not just distance</b>: there is no official ranking, so schools are tiered editorially by recent P1 balloting demand — 16 <b>top-tier</b> schools (perennially oversubscribed: Nanyang, Rosyth, Ai Tong, Catholic High, CHIJ St. Nicholas…) count ×1.0, 25 <b>popular</b> schools ×0.85, everyone else ×0.65. A block scores on its <b>best combination of proximity × tier</b>, so a top school at 800&#8202;m can beat an average one at 300&#8202;m; the panel names the school being scored.</li>
     <li><b>Rent level (the heaviest component, 3.0 pts)</b>: rent is treated as <b>the market's own verdict on a block</b> — people pay more to live in better places, so higher rent scores higher. A block's rentals over the last 12 months are compared with the island-wide average <i>for the same flat types</i> (so a 5-room block isn't "desirable" just for being big). Points slide continuously: ratio ≥&#8202;1.25 of the island average → full 3.0&#8202;pts, fading linearly to 0 at ≤&#8202;0.75 (so 1.10 ≈ 2.1&#8202;pts, 0.95 ≈ 1.2&#8202;pts). Blocks with fewer than 3 rentals use their town's ratio (their own average is still displayed, marked accordingly); blocks with no data anywhere score a neutral half. Rents are HDB rental-approval declarations (<a href="https://data.gov.sg/datasets/d_c9f57187485a850908655db0e8cfe651/view">data.gov.sg</a>) — owner-declared, whole-flat rentals, indicative only. ~66% of blocks have their own transactions; the panel shows the average and the count.</li>
-    <li><b>Hawker weight is deliberately low (0.7)</b>: the open dataset covers the ~120 NEA-managed hawker centres only. Kopitiams, coffeeshops and food courts — where much of Singapore actually eats cheaply — appear in no public register, so hawker distance under-represents real food access and is down-weighted rather than allowed to distort the score.</li>
-    <li><b>"Best block" claims come with caveats</b>: the ranking table keeps only blocks with a known dwelling-unit count (excludes carparks/commercial HDB buildings), straight-line distance flatters blocks near barriers (canals, expressways), and the weights are one editorial view of what matters — a family optimising for schools would weigh differently.</li>
+    <li><b>Hawker sits deliberately low in the default order (0.7)</b>: the open dataset covers the ~120 NEA-managed hawker centres only. Kopitiams, coffeeshops and food courts — where much of Singapore actually eats cheaply — appear in no public register, so hawker distance under-represents real food access and is down-weighted rather than allowed to distort the score.</li>
+    <li><b>"Best block" claims come with caveats</b>: the ranking table keeps only blocks with a known dwelling-unit count (excludes carparks/commercial HDB buildings), straight-line distance flatters blocks near barriers (canals, expressways), and the default weights are one editorial view of what matters — a family optimising for schools should drag schools to the top and re-read the map.</li>
     <li><b>Benchmarks are editorial yardsticks</b> (adjustable above for the charts), not official standards.</li>
     <li><b>HDB blocks</b>: <a href="https://data.gov.sg/datasets/d_16b157c52ed637edd6ba1232e026258d/view">HDB Existing Building</a> footprints (data.gov.sg) — includes every HDB building, so some points are multi-storey carparks or commercial blocks.</li>
     <li><b>Supermarkets</b>: SFA licensed-supermarket register (data.gov.sg), filtered to NTUC FairPrice and Sheng Siong licences, geocoded by postal code via OneMap. Licence address ≈ store address. Other chains (Giant, Cold Storage, Prime…) are excluded by design.</li>
@@ -325,13 +361,37 @@ const LAYERS = {
   communityclub:{label:'Community club', short:'community club', cssVar:'--c-cc', shape:'circle'},
 };
 // Which HDB block is the best in Singapore, out of 10?
-// Weighted score: rent level (market desirability) matters most, then
-// each amenity by priority.
-// Hawker is deliberately light: the dataset is NEA hawker centres only
+// Weighted score: the weight LADDER is fixed and sums to 10 — the reader
+// sets the ORDER by dragging the priority list, so rank 1 is worth 3.0 and
+// rank 8 is worth 0.2 whatever sits there. The default order is editorial:
+// rent level (market desirability) first, then each amenity by priority.
+// Hawker sits deliberately low: the dataset is NEA hawker centres only
 // (no kopitiams/coffeeshops), so it under-represents cheap food access.
-// Weights sum to 10.
-const WEIGHTS = {rent:3.0, mrt:2.0, super:1.4, school:1.2, mall:1.0,
-                 hawker:0.7, infantcare:0.5, communityclub:0.2};
+const LADDER = [3.0, 2.0, 1.4, 1.2, 1.0, 0.7, 0.5, 0.2];
+const DEFAULT_RANK = ['rent','mrt','super','school','mall','hawker','infantcare','communityclub'];
+const RANK_ITEMS = {
+  rent:         {label:'Rent level', hint:"the market's verdict"},
+  mrt:          {label:'MRT / LRT'},
+  super:        {label:'Supermarket'},
+  school:       {label:'Primary school'},
+  mall:         {label:'Mall'},
+  hawker:       {label:'Hawker centre'},
+  infantcare:   {label:'Infant care'},
+  communityclub:{label:'Community club'},
+};
+const WEIGHTS = {};   // component -> points; rebuilt by applyRank()
+// If the layer list ever changes, keep the same shape: decay, normalised to 10.
+function ladderFor(n){
+  if (n === LADDER.length) return LADDER;
+  const raw = Array.from({length:n}, (_, i) => Math.pow(0.72, i));
+  const k = 10 / raw.reduce((a, v) => a + v, 0);
+  return raw.map(v => Math.round(v * k * 10) / 10);
+}
+function applyRank(){
+  const lad = ladderFor(S.rank.length);
+  for (const k of Object.keys(WEIGHTS)) delete WEIGHTS[k];
+  S.rank.forEach((l, i) => { WEIGHTS[l] = lad[i]; });
+}
 // Proximity gradient: full credit within 100 m, half at the benchmark,
 // zero at 2x the benchmark, linear in between — 100 m beats 300 m.
 const prox = (d, B) =>
@@ -380,6 +440,8 @@ let ORDER = [];        // layer order in blocks.json rows
 let COL = {};          // layer -> column index of distance in a block row
 const S = { focus:'mrt', mode:'score', bench:800, town:'', circles:false,
             visible:new Set(['mrt']), sel:null,   // sel = index into BLOCKS (block-focus mode)
+            nearest:{},                           // sel's nearest-amenity markers, for panel re-renders
+            rank:DEFAULT_RANK.slice(),            // priority order -> WEIGHTS (see applyRank)
             tblFilter:null };                     // bottom table: null = top 50, 'top' = 9+, 'low' = <=4
 
 const dist = (b, layer) => b[COL[layer || S.focus]];
@@ -586,6 +648,7 @@ function selectBlock(i){
 
   const zoom = Math.max(map.getZoom(), 15);
   map.setView([b[2], b[3]], zoom);
+  S.nearest = nearestMarkers;   // kept so a re-rank can repaint the panel in place
   renderFocusPanel(b, nearestMarkers);
   if (matchMedia('(max-width:640px)').matches){
     // half map, half scorecard: map's top half stays visible above the
@@ -685,7 +748,7 @@ function drawLegend(){
     return `<span><span class="sw" style="${style}"></span>${LAYERS[l].label}</span>`;
   }).join('');
   if (S.mode === 'score'){
-    el.innerHTML = `<span><span class="ramp score"></span>block score 0 → 10 — big green dots score 9+ (weights below)</span>` + marks;
+    el.innerHTML = `<span><span class="ramp score"></span>block score 0 → 10 — big green dots score 9+ (rank what you value below)</span>` + marks;
   } else {
     el.innerHTML = `<span><span class="sw" style="background:${css('--blk-covered')}"></span>HDB block — <b>click one (or search above)</b> to see every amenity around it</span>` + marks;
   }
@@ -954,11 +1017,165 @@ function drawLayerBar(){
   });
 }
 
+/* ---------- rank what you value ---------- */
+// The ladder is fixed; dragging a row changes which component earns which
+// rung. Everything downstream (map colours, tiles, charts, table, scorecard)
+// reads WEIGHTS, so a re-rank only needs applyRank() + refreshData().
+const RANK_KEY = 'sgha.rank.v1';
+function defaultRank(){
+  const all = ['rent', ...ORDER];
+  return [...DEFAULT_RANK.filter(k => all.includes(k)),
+          ...all.filter(k => !DEFAULT_RANK.includes(k))];
+}
+function loadRank(){
+  const def = defaultRank();
+  let r = null;
+  try { r = JSON.parse(localStorage.getItem(RANK_KEY) || 'null'); } catch(e){}
+  // a stored order is only usable if it is a permutation of today's components
+  const ok = Array.isArray(r) && r.length === def.length && def.every(k => r.includes(k));
+  return ok ? r : def;
+}
+function saveRank(){
+  try {
+    const def = defaultRank();
+    if (S.rank.every((k, i) => k === def[i])) localStorage.removeItem(RANK_KEY);
+    else localStorage.setItem(RANK_KEY, JSON.stringify(S.rank));
+  } catch(e){ /* private mode: the ranking just won't persist */ }
+}
+const rankColor = l => l === 'rent' ? css('--ink-3') : layerColor(l);
+
+function drawRanker(){
+  const lad = ladderFor(S.rank.length);
+  $('#rankList').innerHTML = S.rank.map((l, i) => {
+    const it = RANK_ITEMS[l] || {label:l};
+    const c = rankColor(l);
+    const sq = LAYERS[l] && LAYERS[l].shape === 'badge' ? ';border-radius:3px' : '';
+    return `<li data-l="${l}" tabindex="0">
+      <span class="grip" aria-hidden="true">⠿</span>
+      <span class="n">${i + 1}</span>
+      <span class="sw" style="background:${c}${sq}"></span>
+      <span class="nm">${it.label}${it.hint ? ` <span class="hint">— ${it.hint}</span>` : ''}</span>
+      <span class="bar"><i style="width:${100 * lad[i] / lad[0]}%;background:${c}"></i></span>
+      <span class="pts">${lad[i].toFixed(1)}</span>
+      <span class="mv"><button data-mv="-1" aria-label="Move ${it.label} up">▲</button
+        ><button data-mv="1" aria-label="Move ${it.label} down">▼</button></span>
+    </li>`;
+  }).join('');
+  relabelRanker();
+  hookRanker();
+}
+
+// cheap in-place refresh: keeps the dragged node alive mid-drag
+function relabelRanker(){
+  const kids = [...$('#rankList').children], lad = ladderFor(kids.length);
+  kids.forEach((li, i) => {
+    const it = RANK_ITEMS[li.dataset.l] || {label:li.dataset.l};
+    li.querySelector('.n').textContent = i + 1;
+    li.querySelector('.pts').textContent = lad[i].toFixed(1);
+    li.querySelector('.bar i').style.width = (100 * lad[i] / lad[0]) + '%';
+    li.setAttribute('aria-label',
+      `${it.label}: rank ${i + 1} of ${kids.length}, ${lad[i].toFixed(1)} points. ` +
+      `Arrow keys move it.`);
+  });
+  const def = defaultRank();
+  $('#rankState').textContent = S.rank.every((k, i) => k === def[i]) ? '' : '· your ranking, saved';
+}
+
+function commitRank(){
+  const order = [...$('#rankList').children].map(li => li.dataset.l);
+  const same = order.length === S.rank.length && order.every((k, i) => k === S.rank[i]);
+  if (same){ relabelRanker(); return; }   // a plain click shouldn't repaint 13k dots
+  S.rank = order;
+  applyRank(); saveRank(); relabelRanker();
+  refreshData();
+  if (S.sel !== null) renderFocusPanel(BLOCKS[S.sel], S.nearest);
+}
+
+function moveBy(li, dir){
+  const sib = dir < 0 ? li.previousElementSibling : li.nextElementSibling;
+  if (!sib) return;
+  dir < 0 ? li.parentNode.insertBefore(li, sib) : li.parentNode.insertBefore(sib, li);
+  commitRank();
+  li.focus();
+}
+
+let drag = null;
+function hookRanker(){
+  $('#rankList').querySelectorAll('li').forEach(li => {
+    li.querySelectorAll('button[data-mv]').forEach(b => {
+      b.onclick = e => { e.stopPropagation(); moveBy(li, +b.dataset.mv); };
+    });
+    li.addEventListener('keydown', e => {
+      if (e.key === 'ArrowUp'){ e.preventDefault(); moveBy(li, -1); }
+      else if (e.key === 'ArrowDown'){ e.preventDefault(); moveBy(li, 1); }
+    });
+    li.addEventListener('pointerdown', e => {
+      if (e.button > 0 || e.target.closest('button')) return;
+      // touch/pen: only the grip starts a drag, so the page can still scroll
+      if (e.pointerType !== 'mouse' && !e.target.closest('.grip')) return;
+      startDrag(li, e);
+    });
+  });
+}
+
+function startDrag(li, e){
+  drag = {li, list:li.parentNode, id:e.pointerId, startY:e.clientY};
+  li.setPointerCapture(e.pointerId);
+  li.classList.add('dragging');
+  li.addEventListener('pointermove', onDragMove);
+  li.addEventListener('pointerup', endDrag);
+  li.addEventListener('pointercancel', endDrag);
+}
+
+function onDragMove(e){
+  if (!drag) return;
+  e.preventDefault();
+  drag.li.style.transform = `translateY(${e.clientY - drag.startY}px)`;
+  // which row has the dragged row's centre crossed?
+  const mid = drag.li.getBoundingClientRect().top + drag.li.offsetHeight / 2;
+  let before = null;
+  for (const it of drag.list.children){
+    if (it === drag.li) continue;
+    const r = it.getBoundingClientRect();
+    if (mid < r.top + r.height / 2){ before = it; break; }
+  }
+  if (before === drag.li.nextElementSibling) return;   // already in that slot
+  // re-slot without the row visually jumping: rebase the drag origin on the
+  // new layout position so the row stays exactly under the pointer
+  const oldTop = drag.li.getBoundingClientRect().top;
+  drag.li.style.transform = '';
+  drag.list.insertBefore(drag.li, before);
+  const shift = oldTop - drag.li.getBoundingClientRect().top;
+  drag.startY = e.clientY - shift;
+  drag.li.style.transform = `translateY(${shift}px)`;
+  relabelRanker();
+}
+
+function endDrag(){
+  if (!drag) return;
+  const li = drag.li;
+  li.style.transform = '';
+  li.classList.remove('dragging');
+  li.removeEventListener('pointermove', onDragMove);
+  li.removeEventListener('pointerup', endDrag);
+  li.removeEventListener('pointercancel', endDrag);
+  try { li.releasePointerCapture(drag.id); } catch(e){}
+  drag = null;
+  commitRank();
+}
+
+$('#rankReset').onclick = () => {
+  S.rank = defaultRank();
+  applyRank(); saveRank(); drawRanker();
+  refreshData();
+  if (S.sel !== null) renderFocusPanel(BLOCKS[S.sel], S.nearest);
+};
+
 /* ---------- refresh orchestration ---------- */
 function refreshData(){ setTiles(); drawBlocks(); drawCharts(); drawLegend(); }
 function refreshAll(theme){
   if (theme) tileLayer.setUrl(TILES[curTheme()]);
-  drawLayerBar(); drawAmenities(); refreshData();
+  drawLayerBar(); drawAmenities(); drawRanker(); refreshData();
   if (S.sel !== null) selectBlock(S.sel); // re-paint focus layer in the new theme
 }
 
@@ -1066,7 +1283,9 @@ Promise.all(['data/blocks.json','data/amenities.json','data/summary.json']
   $('#fFocus').disabled = S.mode === 'score';
   const towns = [...new Set(BLOCKS.map(b=>b[5]).filter(Boolean))].sort((a,b)=>(TOWN[a]||a).localeCompare(TOWN[b]||b));
   $('#fTown').innerHTML = '<option value="">all</option>' + towns.map(t=>`<option value="${t}">${TOWN[t]||t}</option>`).join('');
-  initMap(); drawLayerBar(); setTiles(); drawLegend(); drawCharts();
+  S.rank = loadRank();   // the visitor's own priority order, if they set one
+  applyRank();
+  initMap(); drawLayerBar(); drawRanker(); setTiles(); drawLegend(); drawCharts();
   addEventListener('resize', ()=>{ clearTimeout(window.__rt); window.__rt = setTimeout(drawCharts, 200); });
 })
 .catch(e=>{
