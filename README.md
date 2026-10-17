@@ -119,5 +119,5 @@ Data: [data.gov.sg](https://data.gov.sg) datasets (SFA, MOE, LTA, NEA, PA,
 HDB) under the
 [Singapore Open Data Licence](https://data.gov.sg/open-data-licence).
 Geocoding: [OneMap](https://www.onemap.gov.sg/), Singapore Land Authority.
-Basemap: © OpenStreetMap contributors, © CARTO. Mall list adapted from
+Basemap: © OneMap, Singapore Land Authority. Mall list adapted from
 Wikipedia (CC BY-SA).
