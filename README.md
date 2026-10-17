@@ -9,9 +9,9 @@ Search your postal code, or drag your priorities into order and watch the map re
 
 <br>
 
-[![Open the live map](https://img.shields.io/badge/▶_Open_the_live_map-fang89.github.io%2Fsg--house--analysis-15803d?style=for-the-badge)](https://fang89.github.io/sg-house-analysis/)
+[![Open the live map](https://img.shields.io/badge/▶_Open_the_live_map-fang89.github.io%2FSingapore--house--analysis-15803d?style=for-the-badge)](https://fang89.github.io/Singapore-house-analysis/)
 
-**👉 [fang89.github.io/sg-house-analysis/](https://fang89.github.io/sg-house-analysis/)**
+**👉 [fang89.github.io/Singapore-house-analysis/](https://fang89.github.io/Singapore-house-analysis/)**
 
 <br>
 
@@ -23,7 +23,7 @@ Search your postal code, or drag your priorities into order and watch the map re
 
 <br>
 
-<a href="https://fang89.github.io/sg-house-analysis/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/hero-dark.png"><img src="docs/screenshots/hero-light.png" alt="The dashboard: postal-code search, the drag-to-rank priorities ladder and the headline tiles" width="860"></picture></a>
+<a href="https://fang89.github.io/Singapore-house-analysis/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/hero-dark.png"><img src="docs/screenshots/hero-light.png" alt="The dashboard: postal-code search, the drag-to-rank priorities ladder and the headline tiles" width="860"></picture></a>
 
 </div>
 
@@ -52,16 +52,16 @@ Search a postal code or address (OneMap), or tap any dot. You get the points for
 component, every distance, the average rent, the school it was scored on, and dashed lines
 to the nearest of everything.
 
-<p align="center"><a href="https://fang89.github.io/sg-house-analysis/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/scorecard-dark.png"><img src="docs/screenshots/scorecard-light.png" alt="Scorecard for Blk 441B Clementi Ave 3: 9.4/10, S$3,967 rent, Clementi MRT 116 m, FairPrice and Clementi Mall 19 m" width="760"></picture></a></p>
+<p align="center"><a href="https://fang89.github.io/Singapore-house-analysis/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/scorecard-dark.png"><img src="docs/screenshots/scorecard-light.png" alt="Scorecard for Blk 441B Clementi Ave 3: 9.4/10, S$3,967 rent, Clementi MRT 116 m, FairPrice and Clementi Mall 19 m" width="760"></picture></a></p>
 
 ## 🗺️ The whole island at a glance
 
 Score mode colours every block from red to green; Explore mode shows plain dots so you can
 switch amenity layers on and off. Filter by town or draw coverage circles.
 
-<p align="center"><a href="https://fang89.github.io/sg-house-analysis/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/map-dark.png"><img src="docs/screenshots/map-light.png" alt="Island-wide map of HDB blocks coloured by score, with MRT and LRT stations marked" width="760"></picture></a></p>
+<p align="center"><a href="https://fang89.github.io/Singapore-house-analysis/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/map-dark.png"><img src="docs/screenshots/map-light.png" alt="Island-wide map of HDB blocks coloured by score, with MRT and LRT stations marked" width="760"></picture></a></p>
 
-<p align="center"><a href="https://fang89.github.io/sg-house-analysis/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/charts-dark.png"><img src="docs/screenshots/charts-light.png" alt="Score distribution histogram beside the best towns ranked by average score" width="760"></picture></a></p>
+<p align="center"><a href="https://fang89.github.io/Singapore-house-analysis/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/charts-dark.png"><img src="docs/screenshots/charts-light.png" alt="Score distribution histogram beside the best towns ranked by average score" width="760"></picture></a></p>
 
 ## 📊 Headline findings
 
@@ -146,7 +146,7 @@ Raw inputs in `data/` and how to re-download them:
 | `extra_communityclub.geojson` | [PA Community Clubs](https://data.gov.sg/datasets/d_9de02d3fb33d96da1855f4fbef549a0f/view) |
 | `ecda_centres.json` + `childcare_centres.geojson` | [ECDA Listing of Centres](https://data.gov.sg/datasets/d_696c994c50745b079b3684f0e90ffc53/view) + [Child Care Services](https://data.gov.sg/datasets/d_5d668e3f544335f8028f546827b773b4/view) (infant-care filter) |
 | `rents.json` | [Renting Out of Flats from Jan 2021](https://data.gov.sg/datasets/d_c9f57187485a850908655db0e8cfe651/view) (HDB, last 12 months kept) |
-| `hdb_blocks_base.json` | HDB block centroids derived from [HDB Existing Building](https://data.gov.sg/datasets/d_16b157c52ed637edd6ba1232e026258d/view) (see the [atm-500m](https://github.com/fang89/atm-500m) pipeline) |
+| `hdb_blocks_base.json` | HDB block centroids derived from [HDB Existing Building](https://data.gov.sg/datasets/d_16b157c52ed637edd6ba1232e026258d/view) (see the [Singapore-ATMs](https://github.com/fang89/Singapore-ATMs) pipeline) |
 
 Any additional `data/extra_<name>.geojson` you drop in is picked up
 automatically as a new layer (childcare centres, gyms, polyclinics…).
@@ -168,4 +168,4 @@ Data: [data.gov.sg](https://data.gov.sg) datasets (SFA, MOE, LTA, NEA, PA, HDB) 
 [Singapore Open Data Licence](https://data.gov.sg/open-data-licence).
 Geocoding and basemap: [OneMap](https://www.onemap.gov.sg/), Singapore Land Authority.
 Mall list adapted from Wikipedia (CC BY-SA). Sister project:
-[atm-500m](https://github.com/fang89/atm-500m), which supplies the HDB block centroids.
+[Singapore-ATMs](https://github.com/fang89/Singapore-ATMs), which supplies the HDB block centroids.
